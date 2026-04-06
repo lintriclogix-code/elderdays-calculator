@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Senior Care Cost Calculator 2025 | How Much Does Senior Care Cost? | Elder Days</title>
+
+<!-- Primary SEO Meta -->
+<meta name="description" content="Free senior care cost calculator. Estimate monthly costs for assisted living, memory care, in-home care, and nursing homes by location, care needs, and insurance. Updated 2025 national averages.">
+<meta name="keywords" content="senior care cost calculator, how much does assisted living cost, memory care cost, in-home care cost, nursing home cost estimator, elder care calculator, senior living cost by state">
+<meta name="robots" content="index, follow">
+<meta name="author" content="Elder Days">
+<link rel="canonical" href="https://elderdays.com/senior-care-cost-calculator">
+
+<!-- Open Graph (Facebook, LinkedIn sharing) -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="Senior Care Cost Calculator &mdash; How Much Will Care Cost?">
+<meta property="og:description" content="Estimate monthly senior care costs in under 60 seconds. Covers assisted living, memory care, in-home care, and nursing homes. Free tool from Elder Days.">
+<meta property="og:url" content="https://elderdays.com/senior-care-cost-calculator">
+<meta property="og:site_name" content="Elder Days">
+<meta property="og:image" content="https://elderdays.com/images/calculator-og.png">
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Senior Care Cost Calculator | Elder Days">
+<meta name="twitter:description" content="Free tool to estimate monthly costs for assisted living, memory care, in-home care, and nursing homes &mdash; by region, care needs, and insurance coverage.">
+<meta name="twitter:image" content="https://elderdays.com/images/calculator-og.png">
+
+<!-- JSON-LD Structured Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      "name": "Senior Care Cost Calculator",
+      "description": "A free interactive calculator that estimates monthly senior care costs based on care type, location, specific care needs, and insurance coverage.",
+      "url": "https://elderdays.com/senior-care-cost-calculator",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "provider": {
+        "@type": "Organization",
+        "name": "Elder Days",
+        "url": "https://elderdays.com"
+      },
+      "featureList": [
+        "Assisted living cost estimates",
+        "Memory care cost estimates",
+        "In-home care cost estimates",
+        "Skilled nursing facility cost estimates",
+        "Regional cost adjustments",
+        "Insurance offset calculations",
+        "Long-term cost projections"
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much does assisted living cost per month?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "The national average cost of assisted living is approximately $4,500 per month in 2025, though costs range from $3,000 to $7,000+ depending on location, amenities, and level of care required."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does memory care cost per month?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Memory care facilities typically cost between $5,000 and $8,000 per month nationally, with a 2025 average of approximately $6,200. Costs are higher than assisted living due to specialized staffing and secure environments."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does in-home senior care cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In-home care costs depend on hours of care needed. Part-time care (4 hours/day) averages $1,600/month, while full-time (8 hours/day) averages $3,200/month, and 24-hour live-in care can reach $7,500+ per month."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Medicare cover assisted living costs?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Medicare does not cover assisted living facility costs. It may cover short-term skilled nursing care following a hospital stay. Medicaid may cover some long-term care costs for income-qualified individuals. Long-term care insurance and Veterans Aid & Attendance benefits are other common coverage options."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "How much does a nursing home cost per month?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Skilled nursing facilities (nursing homes) average $8,500 per month nationally in 2025 for a semi-private room, with private rooms averaging over $9,500 per month. Costs vary significantly by state and facility."
+          }
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Elder Days",
+          "item": "https://elderdays.com"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Senior Care Cost Calculator",
+          "item": "https://elderdays.com/senior-care-cost-calculator"
+        }
+      ]
+    }
+  ]
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<style>
+  :root {
+    --sage: #5C7A6B;
+    --sage-light: #8FAF9F;
+    --sage-pale: #EBF2EE;
+    --warm: #C4874A;
+    --warm-light: #F2D5B8;
+    --slate: #2D3E4A;
+    --slate-mid: #4A6172;
+    --mist: #F5F8F6;
+    --white: #FFFFFF;
+    --border: #D4E3DB;
+    --text: #2D3E4A;
+    --text-light: #6B8796;
+    --shadow: 0 4px 24px rgba(45,62,74,0.10);
+    --shadow-lg: 0 12px 48px rgba(45,62,74,0.15);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--mist);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .calculator-wrap {
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  /* HEADER */
+  .calc-header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .calc-header .eyebrow {
+    display: inline-block;
+    background: var(--sage-pale);
+    color: var(--sage);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.35rem 1rem;
+    border-radius: 100px;
+    margin-bottom: 1rem;
+  }
+
+  .calc-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.9rem, 4vw, 2.8rem);
+    font-weight: 700;
+    color: var(--slate);
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .calc-header p {
+    color: var(--text-light);
+    font-size: 1rem;
+    font-weight: 300;
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+
+  /* CARD */
+  .calc-card {
+    background: var(--white);
+    border-radius: 20px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    animation: fadeUp 0.6s ease 0.15s both;
+  }
+
+  .calc-body {
+    padding: 2.5rem 2.5rem 2rem;
+  }
+
+  /* SECTIONS */
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--sage);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin-bottom: 2rem;
+  }
+
+  @media (max-width: 560px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .calc-body { padding: 1.5rem; }
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .form-group.full { grid-column: 1 / -1; }
+
+  label {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--slate-mid);
+  }
+
+  select, input[type="number"] {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    color: var(--text);
+    background: var(--white);
+    transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236B8796' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+
+  select:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: var(--sage);
+    box-shadow: 0 0 0 3px rgba(92,122,107,0.12);
+  }
+
+  /* CARE NEEDS TOGGLES */
+  .toggle-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.65rem;
+    margin-bottom: 2rem;
+  }
+
+  .toggle-item {
+    position: relative;
+  }
+
+  .toggle-item input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-item label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.65rem 0.9rem;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 400;
+    color: var(--slate-mid);
+    transition: all 0.2s;
+    user-select: none;
+    background: var(--white);
+  }
+
+  .toggle-item label .icon { font-size: 0.95rem; color: var(--sage); vertical-align: middle; margin-right: 6px; width: 16px; text-align: center; display: inline-block; }
+
+  .toggle-item input:checked + label {
+    border-color: var(--sage);
+    background: var(--sage-pale);
+    color: var(--sage);
+    font-weight: 500;
+  }
+
+  .toggle-item label:hover {
+    border-color: var(--sage-light);
+    background: var(--sage-pale);
+  }
+
+  /* CALCULATE BUTTON */
+  .calc-btn {
+    width: 100%;
+    padding: 1rem;
+    background: var(--sage);
+    color: var(--white);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    letter-spacing: 0.02em;
+    margin-top: 0.5rem;
+    box-shadow: 0 4px 16px rgba(92,122,107,0.25);
+  }
+
+  .calc-btn:hover {
+    background: #4A6859;
+    box-shadow: 0 6px 24px rgba(92,122,107,0.35);
+    transform: translateY(-1px);
+  }
+
+  .calc-btn:active { transform: translateY(0); }
+
+  /* RESULTS */
+  .results-panel {
+    display: none;
+    background: var(--slate);
+    padding: 2.5rem;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .results-panel.visible { display: block; }
+
+  .results-title {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1.1rem;
+    margin-bottom: 1.75rem;
+    opacity: 0.9;
+  }
+
+  .cost-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .cost-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 14px;
+    padding: 1.25rem 1.5rem;
+    transition: background 0.2s;
+  }
+
+  .cost-card:hover { background: rgba(255,255,255,0.11); }
+
+  .cost-card .cost-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--sage-light);
+    margin-bottom: 0.5rem;
+  }
+
+  .cost-card .cost-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--white);
+    line-height: 1;
+  }
+
+  .cost-card .cost-sub {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    margin-top: 0.3rem;
+  }
+
+  .cost-card.highlight {
+    background: var(--sage);
+    border-color: var(--sage);
+  }
+
+  .cost-card.highlight .cost-label { color: rgba(255,255,255,0.7); }
+  .cost-card.highlight .cost-value { color: var(--white); }
+
+  /* BREAKDOWN BAR */
+  .breakdown {
+    margin-bottom: 2rem;
+  }
+
+  .breakdown-title {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 1rem;
+  }
+
+  .bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.65rem;
+  }
+
+  .bar-label {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.7);
+    width: 150px;
+    flex-shrink: 0;
+  }
+
+  .bar-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 100px;
+    overflow: hidden;
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 100px;
+    background: var(--sage-light);
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 0;
+  }
+
+  .bar-amount {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+    width: 80px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+
+  /* CTA */
+  .results-cta {
+    background: rgba(196,135,74,0.15);
+    border: 1px solid rgba(196,135,74,0.3);
+    border-radius: 14px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .results-cta-text h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .results-cta-text p {
+    font-size: 0.82rem;
+    color: rgba(255,255,255,0.55);
+    line-height: 1.4;
+  }
+
+  .cta-btn {
+    padding: 0.7rem 1.5rem;
+    background: var(--warm);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, transform 0.1s;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .cta-btn:hover {
+    background: #B07840;
+    transform: translateY(-1px);
+  }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    text-align: center;
+    font-size: 0.73rem;
+    color: var(--text-light);
+    margin-top: 1.5rem;
+    line-height: 1.5;
+    padding: 0 1rem;
+    animation: fadeUp 0.6s ease 0.3s both;
+  }
+
+  /* POWERED BY */
+  .powered-by {
+    text-align: center;
+    margin-top: 1.25rem;
+    font-size: 0.78rem;
+    color: var(--text-light);
+    animation: fadeUp 0.6s ease 0.4s both;
+  }
+
+  .powered-by a {
+    color: var(--sage);
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .powered-by a:hover { text-decoration: underline; }
+
+  /* FAQ */
+  .faq-list { display:flex; flex-direction:column; gap:0.6rem; }
+  .faq-item { background:var(--white); border:1.5px solid var(--border); border-radius:12px; overflow:hidden; }
+  .faq-q { width:100%; text-align:left; padding:1rem 1.25rem; background:none; border:none; font-family:'DM Sans',sans-serif; font-size:0.92rem; font-weight:500; color:var(--slate); cursor:pointer; display:flex; justify-content:space-between; align-items:center; gap:1rem; transition:background 0.2s; }
+  .faq-q:hover { background:var(--sage-pale); }
+  .faq-q.open { color:var(--sage); }
+  .faq-icon { font-size:1.2rem; color:var(--sage); flex-shrink:0; transition:transform 0.2s; }
+  .faq-q.open .faq-icon { transform:rotate(45deg); }
+  .faq-a { display:none; padding:0 1.25rem 1rem; font-size:0.88rem; color:var(--text-light); line-height:1.65; }
+  .faq-a strong { color:var(--slate); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(18px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<div class="calculator-wrap">
+
+  <div class="calc-header">
+    <span class="eyebrow">Free Planning Tool</span>
+    <h1>Senior Care Cost Calculator</h1>
+    <p>Estimate monthly care costs based on your loved one's needs, location, and care type &mdash; in under a minute.</p>
+  </div>
+
+  <div class="calc-card">
+    <div class="calc-body">
+
+      <!-- LOCATION & CARE TYPE -->
+      <div class="section-label">Location & Care Type</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="region">Region</label>
+          <select id="region">
+            <option value="1.0">National Average</option>
+            <option value="1.35">Northeast (NY, NJ, CT, MA)</option>
+            <option value="1.25">West Coast (CA, WA, OR)</option>
+            <option value="0.90">Southeast (FL, GA, NC, SC)</option>
+            <option value="0.85">Midwest (OH, IN, IL, MI)</option>
+            <option value="0.80">South Central (TX, OK, AR)</option>
+            <option value="0.95">Mid-Atlantic (PA, MD, VA)</option>
+            <option value="1.10">Mountain West (CO, AZ, NV)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="careType">Primary Care Setting</label>
+          <select id="careType">
+            <option value="inhome">In-Home Care</option>
+            <option value="assisted">Assisted Living Facility</option>
+            <option value="memory">Memory Care Facility</option>
+            <option value="nursing">Skilled Nursing Facility</option>
+            <option value="independent">Independent Living Community</option>
+            <option value="adultday">Adult Day Services</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="careHours">Hours of Care per Day (if in-home)</label>
+          <select id="careHours">
+            <option value="4">4 hours/day (part-time)</option>
+            <option value="8" selected>8 hours/day (full-time)</option>
+            <option value="12">12 hours/day</option>
+            <option value="24">24 hours/day (live-in)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="parentAge">Parent's Age Range</label>
+          <select id="parentAge">
+            <option value="1.0">65&ndash;74</option>
+            <option value="1.1">75&ndash;84</option>
+            <option value="1.2" selected>85&ndash;94</option>
+            <option value="1.3">95+</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- CARE NEEDS -->
+      <div class="section-label">Care Needs</div>
+      <div class="toggle-grid">
+        <div class="toggle-item">
+          <input type="checkbox" id="n_medication" value="350">
+          <label for="n_medication"><i class="icon fa-solid fa-pills"></i> Medication Mgmt</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_dementia" value="900">
+          <label for="n_dementia"><i class="icon fa-solid fa-brain"></i> Memory / Dementia</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_mobility" value="400">
+          <label for="n_mobility"><i class="icon fa-solid fa-wheelchair"></i> Mobility Assistance</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_bathing" value="250">
+          <label for="n_bathing"><i class="icon fa-solid fa-shower"></i> Bathing / Grooming</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_incontinence" value="300">
+          <label for="n_incontinence"><i class="icon fa-solid fa-droplet"></i> Incontinence Care</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_wound" value="500">
+          <label for="n_wound"><i class="icon fa-solid fa-bandage"></i> Wound / Medical Care</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_meals" value="200">
+          <label for="n_meals"><i class="icon fa-solid fa-utensils"></i> Meal Preparation</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_transport" value="250">
+          <label for="n_transport"><i class="icon fa-solid fa-car"></i> Transportation</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_monitoring" value="150">
+          <label for="n_monitoring"><i class="icon fa-solid fa-heart-pulse"></i> Remote Monitoring</label>
+        </div>
+        <div class="toggle-item">
+          <input type="checkbox" id="n_companion" value="200">
+          <label for="n_companion"><i class="icon fa-solid fa-hands-holding"></i> Companionship</label>
+        </div>
+      </div>
+
+      <!-- ADDITIONAL -->
+      <div class="section-label">Additional Costs</div>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="insurance">Insurance Coverage</label>
+          <select id="insurance">
+            <option value="0">None / Private Pay</option>
+            <option value="0.20">Long-Term Care Insurance</option>
+            <option value="0.50">Medicaid (income-qualified)</option>
+            <option value="0.10">Veterans Aid & Attendance</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="duration">Expected Duration</label>
+          <select id="duration">
+            <option value="12">Short-term (under 1 year)</option>
+            <option value="24" selected>1&ndash;2 years</option>
+            <option value="48">3&ndash;4 years</option>
+            <option value="72">5+ years</option>
+          </select>
+        </div>
+      </div>
+
+      <button class="calc-btn" onclick="calculate()">Calculate My Estimated Costs ?</button>
+
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-panel" id="resultsPanel">
+      <div class="results-title">Your Estimated Care Costs</div>
+
+      <div class="cost-grid" id="costGrid"></div>
+
+      <div class="breakdown" id="breakdownSection"></div>
+
+      <div class="results-cta">
+        <div class="results-cta-text">
+          <h3>Need help finding the right care provider?</h3>
+          <p>Elder Days connects families with verified local providers &mdash; free for families.</p>
+        </div>
+        <a href="#" class="cta-btn">Find Providers Near You ?</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FAQ SECTION -->
+  <div class="faq-section" style="margin-top:3rem;animation:fadeUp 0.6s ease 0.35s both">
+    <h2 style="font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--slate);text-align:center;margin-bottom:0.5rem">Common Questions About Senior Care Costs</h2>
+    <p style="text-align:center;color:var(--text-light);font-size:0.88rem;margin-bottom:1.75rem">Based on 2025 national data</p>
+    <div class="faq-list">
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How much does assisted living cost per month? <span class="faq-icon">+</span></button>
+        <div class="faq-a">The national average is approximately <strong>$4,500/month</strong> in 2025, ranging from $3,000 in lower-cost states to $7,000+ in the Northeast and West Coast. Costs vary by amenities, room type, and level of care required.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How much does memory care cost per month? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Memory care averages <strong>$6,200/month</strong> nationally &mdash; roughly 35% more than standard assisted living. The higher cost reflects specialized dementia-trained staff, secure environments, and structured programming.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How much does in-home senior care cost? <span class="faq-icon">+</span></button>
+        <div class="faq-a">In-home care costs scale with hours. Part-time (4 hrs/day) averages <strong>$1,600/month</strong>. Full-time (8 hrs/day) runs around <strong>$3,200/month</strong>. Around-the-clock live-in care can reach $7,500+ per month depending on your region.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">Does Medicare cover assisted living or memory care? <span class="faq-icon">+</span></button>
+        <div class="faq-a"><strong>Medicare does not cover assisted living or memory care facility costs.</strong> It may cover short-term skilled nursing following hospitalization. Medicaid covers long-term care for income-qualified individuals. Long-term care insurance and Veterans Aid & Attendance are other major options.</div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">How much does a nursing home cost per month? <span class="faq-icon">+</span></button>
+        <div class="faq-a">Skilled nursing facilities average <strong>$8,500/month</strong> for a semi-private room and over $9,500 for a private room nationally in 2025. This is the highest-cost care setting and varies widely by state &mdash; from $6,000 in some Southern states to $14,000+ in the Northeast.</div>
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaimer">
+    Estimates are based on 2025 national averages from Genworth Cost of Care data and may vary significantly by provider, location, and individual needs. This tool is for planning purposes only &mdash; not a guarantee of actual costs.
+  </p>
+
+  <p class="powered-by">A free resource from <a href="#">Elder Days</a> &mdash; helping families navigate senior care with confidence.</p>
+
+</div>
+
+<script>
+const BASE_COSTS = {
+  inhome:      { base: 3200, label: 'In-Home Care' },
+  assisted:    { base: 4500, label: 'Assisted Living' },
+  memory:      { base: 6200, label: 'Memory Care' },
+  nursing:     { base: 8500, label: 'Skilled Nursing' },
+  independent: { base: 2800, label: 'Independent Living' },
+  adultday:    { base: 1500, label: 'Adult Day Services' }
+};
+
+function calculate() {
+  const region     = parseFloat(document.getElementById('region').value);
+  const careType   = document.getElementById('careType').value;
+  const hours      = parseInt(document.getElementById('careHours').value);
+  const ageMult    = parseFloat(document.getElementById('parentAge').value);
+  const insurance  = parseFloat(document.getElementById('insurance').value);
+  const duration   = parseInt(document.getElementById('duration').value);
+
+  const careData = BASE_COSTS[careType];
+  let baseCost = careData.base;
+
+  // Adjust in-home by hours
+  if (careType === 'inhome') {
+    baseCost = Math.round((hours / 8) * baseCost);
+  }
+
+  // Region & age adjustments
+  baseCost = Math.round(baseCost * region * ageMult);
+
+  // Care needs additions
+  const needInputs = document.querySelectorAll('.toggle-item input:checked');
+  let needsCost = 0;
+  const needsBreakdown = [];
+  needInputs.forEach(inp => {
+    const val = Math.round(parseInt(inp.value) * region);
+    needsCost += val;
+    const lbl = inp.nextElementSibling.querySelector('span.icon').nextSibling.textContent.trim();
+    needsBreakdown.push({ label: lbl, amount: val });
+  });
+
+  const totalMonthly = baseCost + needsCost;
+  const insuranceCredit = Math.round(totalMonthly * insurance);
+  const outOfPocket = totalMonthly - insuranceCredit;
+  const totalProjected = outOfPocket * duration;
+
+  // Render cost cards
+  const grid = document.getElementById('costGrid');
+  grid.innerHTML = `
+    <div class="cost-card highlight">
+      <div class="cost-label">Monthly (Out-of-Pocket)</div>
+      <div class="cost-value">${fmt(outOfPocket)}</div>
+      <div class="cost-sub">after insurance offset</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-label">Monthly Total</div>
+      <div class="cost-value">${fmt(totalMonthly)}</div>
+      <div class="cost-sub">before insurance</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-label">Insurance Offset</div>
+      <div class="cost-value">${fmt(insuranceCredit)}</div>
+      <div class="cost-sub">estimated monthly</div>
+    </div>
+    <div class="cost-card">
+      <div class="cost-label">Projected Total</div>
+      <div class="cost-value">${fmtK(totalProjected)}</div>
+      <div class="cost-sub">over ${duration} months</div>
+    </div>
+  `;
+
+  // Render breakdown bars
+  const breakdownEl = document.getElementById('breakdownSection');
+  const items = [
+    { label: careData.label, amount: baseCost },
+    ...needsBreakdown
+  ];
+  const maxAmt = Math.max(...items.map(i => i.amount));
+
+  breakdownEl.innerHTML = `
+    <div class="breakdown-title">Monthly Cost Breakdown</div>
+    ${items.map(item => `
+      <div class="bar-row">
+        <div class="bar-label">${item.label}</div>
+        <div class="bar-track">
+          <div class="bar-fill" data-width="${Math.round((item.amount/maxAmt)*100)}"></div>
+        </div>
+        <div class="bar-amount">${fmt(item.amount)}</div>
+      </div>
+    `).join('')}
+  `;
+
+  // Show results
+  const panel = document.getElementById('resultsPanel');
+  panel.classList.add('visible');
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  // Animate bars
+  setTimeout(() => {
+    document.querySelectorAll('.bar-fill').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+  }, 100);
+}
+
+function toggleFaq(btn) {
+  const answer = btn.nextElementSibling;
+  const isOpen = btn.classList.contains('open');
+  document.querySelectorAll('.faq-q.open').forEach(b => {
+    b.classList.remove('open');
+    b.nextElementSibling.style.display = 'none';
+  });
+  if (!isOpen) {
+    btn.classList.add('open');
+    answer.style.display = 'block';
+  }
+}
+
+function fmt(n) {
+  return '$' + n.toLocaleString('en-US', { maximumFractionDigits: 0 });
+}
+
+function fmtK(n) {
+  if (n >= 1000000) return '$' + (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return '$' + Math.round(n/1000) + 'K';
+  return fmt(n);
+}
+</script>
+
+</body>
+</html>
