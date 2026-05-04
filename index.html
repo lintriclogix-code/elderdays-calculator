@@ -125,10 +125,13 @@
 </script>
 <script>
 // ── API base URL ──────────────────────────────────────────────────────────────
-// When this file is hosted on a different origin than the Express backend
-// (e.g. Cloudflare Pages at calculator.elderdays.com vs the app at elderdays.com),
-// this prefix ensures all API calls reach the correct server.
-const API_BASE = 'https://elderdays.com';
+// On calculator.elderdays.com (Cloudflare static hosting) the Express backend
+// lives on a different origin, so we need an absolute URL. On elderdays.com
+// itself (Express-served) or localhost the request is same-origin — use a
+// relative URL so CORS never enters the picture.
+const API_BASE = window.location.hostname === 'calculator.elderdays.com'
+  ? 'https://elderdays.com'
+  : '';
 
 // ── Gated Provider Match — multi-step state ───────────────────────────────────
 const matchState = { zip: '', careType: '', careTypeLabel: '', timeline: '' };
