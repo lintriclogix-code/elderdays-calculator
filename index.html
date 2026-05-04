@@ -10,13 +10,13 @@
 <meta name="keywords" content="senior care cost calculator, how much does assisted living cost, memory care cost, in-home care cost, nursing home cost estimator, elder care calculator, senior living cost by state">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Elder Days">
-<link rel="canonical" href="https://elderdays.com/senior-care-cost-calculator">
+<link rel="canonical" href="https://calculator.elderdays.com">
 
 <!-- Open Graph (Facebook, LinkedIn sharing) -->
 <meta property="og:type" content="website">
 <meta property="og:title" content="Senior Care Cost Calculator &mdash; How Much Will Care Cost?">
 <meta property="og:description" content="Estimate monthly senior care costs in under 60 seconds. Covers assisted living, memory care, in-home care, and nursing homes. Free tool from Elder Days.">
-<meta property="og:url" content="https://elderdays.com/senior-care-cost-calculator">
+<meta property="og:url" content="https://calculator.elderdays.com">
 <meta property="og:site_name" content="Elder Days">
 <meta property="og:image" content="https://elderdays.com/images/calculator-og.png">
 
@@ -35,7 +35,7 @@
       "@type": "WebApplication",
       "name": "Senior Care Cost Calculator",
       "description": "A free interactive calculator that estimates monthly senior care costs based on care type, location, specific care needs, and insurance coverage.",
-      "url": "https://elderdays.com/senior-care-cost-calculator",
+      "url": "https://calculator.elderdays.com",
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Any",
       "offers": {
@@ -116,15 +116,23 @@
           "@type": "ListItem",
           "position": 2,
           "name": "Senior Care Cost Calculator",
-          "item": "https://elderdays.com/senior-care-cost-calculator"
+          "item": "https://calculator.elderdays.com"
         }
       ]
     }
   ]
 }
+</script>
+<script>
+// ── API base URL ──────────────────────────────────────────────────────────────
+// When this file is hosted on a different origin than the Express backend
+// (e.g. Cloudflare Pages at calculator.elderdays.com vs the app at elderdays.com),
+// this prefix ensures all API calls reach the correct server.
+const API_BASE = 'https://elderdays.com';
 
 // ── Gated Provider Match — multi-step state ───────────────────────────────────
 const matchState = { zip: '', careType: '', careTypeLabel: '', timeline: '' };
+let lastProviderRequestId = null;
 const CARE_TYPE_LABELS = {
   inhome:    'In-home care',
   assisted:  'Assisted living / placement help',
@@ -197,28 +205,42 @@ function renderProviderCards(candidates, zip) {
     return;
   }
   noResults.style.display = 'none';
-  list.innerHTML = candidates.map((c, i) => `
+  list.innerHTML = candidates.map((c, i) => {
+    const location = [c.city, c.state].filter(Boolean).join(', ');
+    const distLabel = c.distanceMiles != null ? `${c.distanceMiles} mi away` : '';
+    const locationLine = [location, distLabel].filter(Boolean).join(' · ');
+    return `
     <div class="provider-card" style="animation-delay:${i * 0.08}s">
       <div class="provider-card-header">
         <div class="provider-card-name">${esc(c.providerName)}</div>
-        ${c.rating ? `<div class="provider-card-rating"><span class="stars">${renderStars(c.rating)}</span> ${Number(c.rating).toFixed(1)} <span class="rating-count">(${c.ratingCount || 0})</span></div>` : ''}
+        <div class="provider-card-source">Local provider candidate</div>
       </div>
       <div class="provider-card-body">
-        ${c.address ? `<div class="provider-card-detail">📍 ${esc(c.address)}</div>` : ''}
-        ${c.phone   ? `<div class="provider-card-detail">📞 <a href="tel:${esc(c.phone)}" class="provider-card-tel">${esc(c.phone)}</a></div>` : ''}
+        ${locationLine ? `<div class="provider-card-detail">📍 ${esc(locationLine)}</div>` : c.address ? `<div class="provider-card-detail">📍 ${esc(c.address)}</div>` : ''}
+        ${c.phone ? `<div class="provider-card-detail">📞 <a href="tel:${esc(c.phone)}" class="provider-card-tel">${esc(c.phone)}</a></div>` : ''}
+        ${c.website ? `<div class="provider-card-detail">🌐 <a href="${esc(c.website)}" target="_blank" rel="noopener noreferrer" class="provider-card-web">${esc(c.website.replace(/^https?:\/\/(www\.)?/, '').split('/')[0])}</a></div>` : ''}
       </div>
       <div class="provider-card-actions">
-        <button class="provider-card-contact" onclick="requestContact(this, '${esc(c.providerName)}')">Request Contact</button>
+        <button class="provider-card-contact" onclick="requestContact(this, ${c.id != null ? c.id : 'null'}, '${esc(c.providerName)}')">Request Contact Through ElderDays</button>
         ${c.mapsUrl ? `<a class="provider-card-maps" href="${esc(c.mapsUrl)}" target="_blank" rel="noopener noreferrer">View on Maps ↗</a>` : ''}
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
-function requestContact(btn, providerName) {
+function requestContact(btn, candidateId, providerName) {
   btn.disabled = true;
   btn.textContent = '✓ Request sent';
   btn.classList.add('sent');
+  if (lastProviderRequestId) {
+    const body = { requestId: lastProviderRequestId, eventType: 'contact_request' };
+    if (candidateId != null) body.providerCandidateId = candidateId;
+    fetch(API_BASE + '/api/provider-match-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }).catch(() => {});
+  }
 }
 
 async function submitProviderRequest(event) {
@@ -235,6 +257,7 @@ async function submitProviderRequest(event) {
     email:               String(formData.get('email') || '').trim(),
     phone:               String(formData.get('phone') || '').trim(),
     zipCode:             matchState.zip,
+    careCategory:        matchState.careType,
     relationshipToElder: String(formData.get('relationshipToElder') || '').trim(),
     timeline:            matchState.timeline,
     preferredContact:    String(formData.get('preferredContact') || 'email').trim(),
@@ -258,7 +281,7 @@ async function submitProviderRequest(event) {
   status.textContent = '';
 
   try {
-    const res = await fetch('/api/provider-requests', {
+    const res = await fetch(API_BASE + '/api/provider-requests', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
@@ -270,6 +293,7 @@ async function submitProviderRequest(event) {
     }
 
     // Transition to step 3 and show provider cards
+    lastProviderRequestId = data.requestId ?? null;
     document.getElementById('providerStep2').style.display = 'none';
     const step3 = document.getElementById('providerStep3');
     step3.style.display = 'block';
@@ -525,10 +549,12 @@ async function submitProviderRequest(event) {
     display: none;
     background: var(--slate);
     padding: 2.5rem;
-    animation: fadeUp 0.5s ease both;
   }
 
-  .results-panel.visible { display: block; }
+  .results-panel.visible {
+    display: block;
+    animation: fadeUp 0.5s ease both;
+  }
 
   .results-title {
     font-family: 'Playfair Display', serif;
@@ -846,12 +872,15 @@ async function submitProviderRequest(event) {
   }
   .provider-card-header { margin-bottom: 0.5rem; }
   .provider-card-name { color: var(--white); font-weight: 700; font-size: 1rem; line-height: 1.3; }
+  .provider-card-source { color: rgba(255,255,255,0.38); font-size: 0.74rem; margin-top: 0.15rem; letter-spacing: 0.02em; }
   .provider-card-rating { color: var(--warm-light); font-size: 0.82rem; margin-top: 0.2rem; }
   .provider-card-rating .stars { color: var(--warm); letter-spacing: -1px; }
   .provider-card-rating .rating-count { color: rgba(255,255,255,0.45); }
   .provider-card-body { margin-bottom: 0.75rem; }
   .provider-card-detail { color: rgba(255,255,255,0.65); font-size: 0.84rem; line-height: 1.5; margin-bottom: 0.2rem; }
   .provider-card-tel { color: rgba(255,255,255,0.65); text-decoration: none; }
+  .provider-card-web { color: rgba(255,255,255,0.65); text-decoration: none; }
+  .provider-card-web:hover { color: var(--white); text-decoration: underline; }
   .provider-card-tel:hover { color: var(--white); }
   .provider-card-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
   .provider-card-contact {
@@ -1046,7 +1075,7 @@ async function submitProviderRequest(event) {
         </div>
       </div>
 
-      <button class="calc-btn" onclick="calculate()">Calculate My Estimated Costs ?</button>
+      <button type="button" class="calc-btn" onclick="calculate()">Calculate My Estimated Costs ?</button>
 
     </div>
 
@@ -1227,6 +1256,89 @@ async function submitProviderRequest(event) {
 </div>
 
 <script>
+// ── White-label URL param support ─────────────────────────────────────────────
+// Agency partners embed this calculator with their branding via URL params:
+//   ?agency=Sunrise+Home+Care  → replaces "Elder Days" in header/footer
+//   ?color=2d6a4f              → hex color (no #) for primary accent
+//   ?logo=https%3A%2F%2F...    → logo image URL shown in header
+//   ?tagline=Powered+by+...    → optional sub-heading text
+//
+// Params are read once on load and applied via CSS variable + DOM injection.
+// If no params are present, the calculator renders exactly as before.
+
+(function applyWhiteLabel() {
+  const p = new URLSearchParams(window.location.search);
+  const agency  = p.get('agency');
+  const color   = p.get('color');
+  const logoUrl = p.get('logo');
+  const tagline = p.get('tagline');
+
+  if (!agency && !color && !logoUrl) return; // no white-label params — skip
+
+  // Apply primary color override via CSS variable
+  if (color) {
+    const hex = color.startsWith('#') ? color : '#' + color;
+    document.documentElement.style.setProperty('--sage', hex);
+    // Derive a slightly darker hover shade (simple: darken by overlaying black 15%)
+    document.documentElement.style.setProperty('--sage-dark', hex + 'cc');
+  }
+
+  // Inject branded header once the DOM is ready
+  document.addEventListener('DOMContentLoaded', function () {
+    const header = document.querySelector('.calc-header');
+    if (!header) return;
+
+    // Insert agency logo + name bar above the existing header
+    if (agency || logoUrl) {
+      const bar = document.createElement('div');
+      bar.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:1.25rem;';
+
+      if (logoUrl) {
+        const img = document.createElement('img');
+        img.src = decodeURIComponent(logoUrl);
+        img.alt = agency || 'Agency Logo';
+        img.style.cssText = 'height:36px;max-width:160px;object-fit:contain;';
+        img.onerror = function () { img.style.display = 'none'; };
+        bar.appendChild(img);
+      }
+
+      if (agency) {
+        const name = document.createElement('span');
+        name.textContent = decodeURIComponent(agency);
+        name.style.cssText = 'font-weight:700;font-size:1rem;color:var(--sage);';
+        bar.appendChild(name);
+      }
+
+      header.insertBefore(bar, header.firstChild);
+    }
+
+    // Update eyebrow text
+    if (agency) {
+      const eyebrow = header.querySelector('.eyebrow');
+      if (eyebrow) eyebrow.textContent = decodeURIComponent(agency);
+    }
+
+    // Add tagline below h1 if provided
+    if (tagline) {
+      const h1 = header.querySelector('h1');
+      if (h1) {
+        const sub = document.createElement('p');
+        sub.textContent = decodeURIComponent(tagline);
+        sub.style.cssText = 'font-size:0.875rem;color:var(--text-muted);margin-top:0.35rem;';
+        h1.insertAdjacentElement('afterend', sub);
+      }
+    }
+
+    // Update "powered by" footer
+    if (agency) {
+      const poweredBy = document.querySelector('.powered-by');
+      if (poweredBy) {
+        poweredBy.innerHTML = `A free resource from <strong>${decodeURIComponent(agency)}</strong> &mdash; helping families navigate senior care with confidence.`;
+      }
+    }
+  });
+})();
+
 const BASE_COSTS = {
   inhome:      { base: 3200, label: 'In-Home Care' },
   assisted:    { base: 4500, label: 'Assisted Living' },
@@ -1252,6 +1364,7 @@ function getSelectedCareNeeds() {
 }
 
 function calculate() {
+  try {
   const region     = parseFloat(document.getElementById('region').value);
   const careType   = document.getElementById('careType').value;
   const hours      = parseInt(document.getElementById('careHours').value);
@@ -1260,6 +1373,7 @@ function calculate() {
   const duration   = parseInt(document.getElementById('duration').value);
 
   const careData = BASE_COSTS[careType];
+  if (!careData) { console.error('[Calculator] Unknown careType:', careType); return; }
   let baseCost = careData.base;
 
   // Adjust in-home by hours
@@ -1277,7 +1391,7 @@ function calculate() {
   needInputs.forEach(inp => {
     const val = Math.round(parseInt(inp.value) * region);
     needsCost += val;
-    const lbl = inp.nextElementSibling.textContent.replace(/\s+/g, ' ').trim();
+    const lbl = inp.nextElementSibling?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
     needsBreakdown.push({ label: lbl, amount: val });
   });
 
@@ -1346,8 +1460,10 @@ function calculate() {
     `).join('')}
   `;
 
-  // Show results
+  // Show results — force animation to replay on every call
   const panel = document.getElementById('resultsPanel');
+  panel.classList.remove('visible');
+  void panel.offsetWidth; // trigger reflow so animation restarts
   panel.classList.add('visible');
   panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -1357,6 +1473,9 @@ function calculate() {
       bar.style.width = bar.dataset.width + '%';
     });
   }, 100);
+  } catch (err) {
+    console.error('[Calculator] calculate() failed:', err);
+  }
 }
 
 function toggleFaq(btn) {
