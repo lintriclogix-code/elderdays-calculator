@@ -10,7 +10,7 @@
 <meta name="keywords" content="senior care cost calculator, how much does assisted living cost, memory care cost, in-home care cost, nursing home cost estimator, elder care calculator, senior living cost by state">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Elder Days">
-<link rel="canonical" href="https://calculator.elderdays.com">
+<link rel="canonical" href="https://elderdays.com/senior-care-cost-calculator">
 
 <!-- Open Graph (Facebook, LinkedIn sharing) -->
 <meta property="og:type" content="website">
@@ -121,6 +121,168 @@
       ]
     }
   ]
+}
+
+// ── Gated Provider Match — multi-step state ───────────────────────────────────
+const matchState = { zip: '', careType: '', careTypeLabel: '', timeline: '' };
+const CARE_TYPE_LABELS = {
+  inhome:    'In-home care',
+  assisted:  'Assisted living / placement help',
+  medicare:  'Medicare advisor',
+  adultday:  'Adult day services',
+  nonprofit: 'Senior nonprofit support',
+  community: 'Church / community senior support',
+  veteran:   'Veterans support',
+  memory:    'Memory care',
+  nursing:   'Skilled nursing / nursing home',
+  independent: 'Independent senior living',
+};
+
+function openProviderForm() {
+  if (!lastCalculatorData) calculate();
+  const panel = document.getElementById('providerFormPanel');
+  panel.classList.add('visible');
+  // Reset to step 1
+  document.getElementById('providerStep1').style.display = 'block';
+  document.getElementById('providerStep2').style.display = 'none';
+  document.getElementById('providerStep3').style.display = 'none';
+  panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Pre-fill ZIP + care type from calculator data if available
+  if (lastCalculatorData) {
+    const zipEl = document.getElementById('matchZip');
+    if (zipEl && !zipEl.value && lastCalculatorData.zipCode) zipEl.value = lastCalculatorData.zipCode;
+    const ctEl = document.getElementById('matchCareType');
+    if (ctEl && !ctEl.value && lastCalculatorData.careType) ctEl.value = lastCalculatorData.careType;
+  }
+}
+
+function checkLocalOptions(event) {
+  event.preventDefault();
+  const form = event.currentTarget;
+  const zip = form.matchZip.value.trim();
+  const careType = form.matchCareType.value;
+  const timeline = form.matchTimeline.value;
+  if (!zip || !careType || !timeline) return;
+
+  matchState.zip = zip;
+  matchState.careType = careType;
+  matchState.careTypeLabel = CARE_TYPE_LABELS[careType] || careType;
+  matchState.timeline = timeline;
+
+  document.getElementById('providerStep1').style.display = 'none';
+  const step2 = document.getElementById('providerStep2');
+  step2.style.display = 'block';
+  document.getElementById('previewZip').textContent = zip;
+  step2.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function esc(str) {
+  return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderStars(rating) {
+  if (!rating) return '';
+  const full = Math.floor(rating);
+  const half = rating - full >= 0.5 ? 1 : 0;
+  const empty = 5 - full - half;
+  return '★'.repeat(full) + (half ? '½' : '') + '☆'.repeat(empty);
+}
+
+function renderProviderCards(candidates, zip) {
+  const list = document.getElementById('providerCardList');
+  const noResults = document.getElementById('noResultsMsg');
+  if (!candidates || candidates.length === 0) {
+    list.innerHTML = '';
+    noResults.style.display = 'block';
+    return;
+  }
+  noResults.style.display = 'none';
+  list.innerHTML = candidates.map((c, i) => `
+    <div class="provider-card" style="animation-delay:${i * 0.08}s">
+      <div class="provider-card-header">
+        <div class="provider-card-name">${esc(c.providerName)}</div>
+        ${c.rating ? `<div class="provider-card-rating"><span class="stars">${renderStars(c.rating)}</span> ${Number(c.rating).toFixed(1)} <span class="rating-count">(${c.ratingCount || 0})</span></div>` : ''}
+      </div>
+      <div class="provider-card-body">
+        ${c.address ? `<div class="provider-card-detail">📍 ${esc(c.address)}</div>` : ''}
+        ${c.phone   ? `<div class="provider-card-detail">📞 <a href="tel:${esc(c.phone)}" class="provider-card-tel">${esc(c.phone)}</a></div>` : ''}
+      </div>
+      <div class="provider-card-actions">
+        <button class="provider-card-contact" onclick="requestContact(this, '${esc(c.providerName)}')">Request Contact</button>
+        ${c.mapsUrl ? `<a class="provider-card-maps" href="${esc(c.mapsUrl)}" target="_blank" rel="noopener noreferrer">View on Maps ↗</a>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function requestContact(btn, providerName) {
+  btn.disabled = true;
+  btn.textContent = '✓ Request sent';
+  btn.classList.add('sent');
+}
+
+async function submitProviderRequest(event) {
+  event.preventDefault();
+  if (!lastCalculatorData) calculate();
+
+  const form = event.currentTarget;
+  const submitBtn = document.getElementById('providerSubmitBtn');
+  const status = document.getElementById('providerStatus');
+  const formData = new FormData(form);
+
+  const payload = {
+    name:                String(formData.get('name') || '').trim(),
+    email:               String(formData.get('email') || '').trim(),
+    phone:               String(formData.get('phone') || '').trim(),
+    zipCode:             matchState.zip,
+    relationshipToElder: String(formData.get('relationshipToElder') || '').trim(),
+    timeline:            matchState.timeline,
+    preferredContact:    String(formData.get('preferredContact') || 'email').trim(),
+    notes:               '',
+    calculatorData: {
+      ...(lastCalculatorData || {}),
+      careType:      matchState.careType,
+      careTypeLabel: matchState.careTypeLabel,
+    }
+  };
+
+  if (!payload.name || !payload.email) {
+    status.className = 'provider-status error';
+    status.textContent = 'Please complete your name and email.';
+    return;
+  }
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Searching nearby providers…';
+  status.className = 'provider-status';
+  status.textContent = '';
+
+  try {
+    const res = await fetch('/api/provider-requests', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || !data.ok) {
+      throw new Error(data.error || 'Unable to submit provider request.');
+    }
+
+    // Transition to step 3 and show provider cards
+    document.getElementById('providerStep2').style.display = 'none';
+    const step3 = document.getElementById('providerStep3');
+    step3.style.display = 'block';
+    document.getElementById('resultsZip').textContent = matchState.zip;
+    renderProviderCards(data.candidates || [], matchState.zip);
+    step3.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    form.reset();
+  } catch (err) {
+    status.className = 'provider-status error';
+    status.textContent = err && err.message ? err.message : 'Something went wrong. Please try again.';
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Send My Provider List →';
+  }
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -523,6 +685,194 @@
     transform: translateY(-1px);
   }
 
+
+  /* PROVIDER MATCH FORM */
+  .provider-form-panel {
+    display: none;
+    margin-top: 1.5rem;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 1.5rem;
+  }
+
+  .provider-form-panel.visible { display: block; }
+
+  .provider-form-panel h3 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 1.1rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .provider-form-panel .provider-intro {
+    color: rgba(255,255,255,0.62);
+    font-size: 0.86rem;
+    line-height: 1.5;
+    margin-bottom: 1.15rem;
+  }
+
+  .provider-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.9rem;
+  }
+
+  .provider-grid .full { grid-column: 1 / -1; }
+
+  .provider-form-panel label {
+    color: rgba(255,255,255,0.78);
+    font-size: 0.78rem;
+  }
+
+  .provider-form-panel input,
+  .provider-form-panel select,
+  .provider-form-panel textarea {
+    width: 100%;
+    padding: 0.72rem 0.85rem;
+    border: 1px solid rgba(255,255,255,0.16);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    color: var(--white);
+    background: rgba(255,255,255,0.08);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .provider-form-panel input::placeholder,
+  .provider-form-panel textarea::placeholder { color: rgba(255,255,255,0.34); }
+
+  .provider-form-panel select option { color: var(--slate); }
+
+  .provider-form-panel input:focus,
+  .provider-form-panel select:focus,
+  .provider-form-panel textarea:focus {
+    outline: none;
+    border-color: var(--warm);
+    box-shadow: 0 0 0 3px rgba(196,135,74,0.16);
+  }
+
+  .provider-form-panel textarea {
+    min-height: 90px;
+    resize: vertical;
+  }
+
+  .provider-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .provider-submit-btn {
+    padding: 0.78rem 1.4rem;
+    background: var(--warm);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  .provider-submit-btn:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+  }
+
+  .provider-status {
+    color: rgba(255,255,255,0.72);
+    font-size: 0.83rem;
+    line-height: 1.45;
+  }
+
+  .provider-status.error { color: #ffd4c8; }
+  .provider-status.success { color: #d8f5e4; }
+
+  .benefits-next-step {
+    display: none;
+    margin-top: 1rem;
+    padding: 1rem 1.15rem;
+    border-radius: 12px;
+    background: rgba(92,122,107,0.24);
+    border: 1px solid rgba(143,175,159,0.35);
+  }
+
+  .benefits-next-step { display: block; }
+  .benefits-next-step p { color: rgba(255,255,255,0.70); font-size: 0.84rem; line-height: 1.5; margin: 0 0 0.8rem; }
+  .benefits-next-step a { color: var(--white); background: var(--sage); padding: 0.68rem 1rem; border-radius: 9px; text-decoration: none; font-weight: 700; font-size: 0.86rem; display: inline-block; }
+
+  /* MATCH PREVIEW (step 2 teaser) */
+  .match-preview {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.9rem;
+    background: rgba(92,122,107,0.28);
+    border: 1px solid rgba(143,175,159,0.40);
+    border-radius: 12px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1.4rem;
+  }
+  .match-preview-icon { font-size: 1.5rem; line-height: 1; flex-shrink: 0; }
+  .match-preview-title { color: var(--white); font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+  .match-preview-sub { color: rgba(255,255,255,0.68); font-size: 0.86rem; line-height: 1.4; }
+
+  /* CONSENT */
+  .consent-label { display: flex; align-items: flex-start; gap: 0.65rem; cursor: pointer; }
+  .consent-label input[type="checkbox"] { margin-top: 0.18rem; flex-shrink: 0; width: 16px; height: 16px; accent-color: var(--sage); }
+  .consent-label span { color: rgba(255,255,255,0.58); font-size: 0.80rem; line-height: 1.5; }
+  .required-mark { color: var(--warm); font-size: 0.78rem; }
+
+  /* RESULTS THANK YOU (step 3) */
+  .results-thank-you {
+    display: flex; align-items: flex-start; gap: 0.9rem;
+    background: rgba(92,122,107,0.28); border: 1px solid rgba(143,175,159,0.40);
+    border-radius: 12px; padding: 1rem 1.2rem; margin-bottom: 1.4rem;
+  }
+  .results-thank-you-icon { font-size: 1.4rem; color: var(--sage-light); flex-shrink: 0; }
+  .results-thank-you-title { color: var(--white); font-weight: 700; font-size: 1rem; margin-bottom: 0.2rem; }
+  .results-thank-you-sub { color: rgba(255,255,255,0.68); font-size: 0.86rem; line-height: 1.4; }
+
+  /* PROVIDER CARDS */
+  .provider-card-list { display: flex; flex-direction: column; gap: 0.9rem; margin-bottom: 1.4rem; }
+  .provider-card {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.14);
+    border-radius: 12px;
+    padding: 1rem 1.15rem;
+    animation: fadeUp 0.4s ease both;
+  }
+  .provider-card-header { margin-bottom: 0.5rem; }
+  .provider-card-name { color: var(--white); font-weight: 700; font-size: 1rem; line-height: 1.3; }
+  .provider-card-rating { color: var(--warm-light); font-size: 0.82rem; margin-top: 0.2rem; }
+  .provider-card-rating .stars { color: var(--warm); letter-spacing: -1px; }
+  .provider-card-rating .rating-count { color: rgba(255,255,255,0.45); }
+  .provider-card-body { margin-bottom: 0.75rem; }
+  .provider-card-detail { color: rgba(255,255,255,0.65); font-size: 0.84rem; line-height: 1.5; margin-bottom: 0.2rem; }
+  .provider-card-tel { color: rgba(255,255,255,0.65); text-decoration: none; }
+  .provider-card-tel:hover { color: var(--white); }
+  .provider-card-actions { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+  .provider-card-contact {
+    background: var(--sage); color: var(--white); border: none; border-radius: 8px;
+    padding: 0.55rem 1rem; font-size: 0.86rem; font-weight: 700; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .provider-card-contact:hover:not(:disabled) { background: var(--slate); }
+  .provider-card-contact.sent { background: rgba(92,122,107,0.45); cursor: default; }
+  .provider-card-maps {
+    color: rgba(255,255,255,0.55); font-size: 0.82rem; text-decoration: none;
+    border-bottom: 1px solid rgba(255,255,255,0.25); padding-bottom: 1px;
+  }
+  .provider-card-maps:hover { color: var(--white); border-color: var(--white); }
+
+  .no-results-msg { color: rgba(255,255,255,0.65); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.2rem; background: rgba(255,255,255,0.05); border-radius: 10px; padding: 1rem 1.2rem; }
+
+  @media (max-width: 560px) {
+    .provider-grid { grid-template-columns: 1fr; }
+    .match-preview, .results-thank-you { flex-direction: column; gap: 0.5rem; }
+  }
   /* DISCLAIMER */
   .disclaimer {
     text-align: center;
@@ -710,10 +1060,132 @@
 
       <div class="results-cta">
         <div class="results-cta-text">
-          <h3>Need help finding the right care provider?</h3>
-          <p>Elder Days connects families with verified local providers &mdash; free for families.</p>
+          <h3>Need help finding care providers or support resources?</h3>
+          <p>Elder Days can help identify local care providers, advisors, and senior support resources based on your needs and location.</p>
         </div>
-        <a href="#" class="cta-btn">Find Providers Near You ?</a>
+        <button type="button" class="cta-btn" onclick="openProviderForm()">Find Help Near You</button>
+      </div>
+
+      <div class="provider-form-panel" id="providerFormPanel">
+
+        <!-- Step 1: Quick Match -->
+        <div class="provider-step" id="providerStep1">
+          <h3>Find Care Help Near You</h3>
+          <p class="provider-intro">Answer 3 quick questions to see what local options are available in your area.</p>
+          <form id="providerMatchForm" onsubmit="checkLocalOptions(event)">
+            <div class="provider-grid">
+              <div class="form-group">
+                <label for="matchZip">ZIP Code</label>
+                <input id="matchZip" name="matchZip" type="text" inputmode="numeric" placeholder="27410" required maxlength="16">
+              </div>
+              <div class="form-group">
+                <label for="matchCareType">Type of Help Needed</label>
+                <select id="matchCareType" name="matchCareType" required>
+                  <option value="">Select care type</option>
+                  <option value="inhome">In-home care</option>
+                  <option value="assisted">Assisted living / placement help</option>
+                  <option value="medicare">Medicare advisor</option>
+                  <option value="adultday">Adult day services</option>
+                  <option value="nonprofit">Senior nonprofit support</option>
+                  <option value="community">Church / community senior support</option>
+                  <option value="veteran">Veterans support</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="matchTimeline">When is care needed?</label>
+                <select id="matchTimeline" name="matchTimeline" required>
+                  <option value="">Select timeline</option>
+                  <option value="Immediately">Immediately</option>
+                  <option value="Within 30 days">Within 30 days</option>
+                  <option value="1-3 months">1-3 months</option>
+                  <option value="3-6 months">3-6 months</option>
+                  <option value="Planning ahead">Planning ahead</option>
+                </select>
+              </div>
+            </div>
+            <div class="provider-form-actions">
+              <button type="submit" class="provider-submit-btn">Check Local Options →</button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 2: Preview + Lead Capture -->
+        <div class="provider-step" id="providerStep2" style="display:none">
+          <div class="match-preview">
+            <span class="match-preview-icon">📍</span>
+            <div>
+              <div class="match-preview-title">Local care options found near <strong id="previewZip"></strong></div>
+              <div class="match-preview-sub">Enter your contact details to receive your matched provider list and care resources.</div>
+            </div>
+          </div>
+          <form id="providerRequestForm" onsubmit="submitProviderRequest(event)">
+            <div class="provider-grid">
+              <div class="form-group">
+                <label for="providerName">Your Name <span class="required-mark">*</span></label>
+                <input id="providerName" name="name" type="text" placeholder="Jane Smith" required minlength="2" maxlength="256">
+              </div>
+              <div class="form-group">
+                <label for="providerEmail">Email <span class="required-mark">*</span></label>
+                <input id="providerEmail" name="email" type="email" placeholder="you@example.com" required maxlength="320">
+              </div>
+              <div class="form-group">
+                <label for="providerPhone">Phone</label>
+                <input id="providerPhone" name="phone" type="tel" placeholder="(555) 555-5555" maxlength="48">
+              </div>
+              <div class="form-group">
+                <label for="relationshipToElder">Relationship to Elder</label>
+                <select id="relationshipToElder" name="relationshipToElder">
+                  <option value="">Select one</option>
+                  <option value="Self">Self</option>
+                  <option value="Parent">Parent</option>
+                  <option value="Spouse">Spouse</option>
+                  <option value="Grandparent">Grandparent</option>
+                  <option value="Client">Client</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="preferredContact">Preferred Contact</label>
+                <select id="preferredContact" name="preferredContact">
+                  <option value="email">Email</option>
+                  <option value="phone">Phone</option>
+                  <option value="text">Text</option>
+                  <option value="any">Any</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label class="consent-label">
+                  <input type="checkbox" id="consentCheck" name="consent" required>
+                  <span>By submitting, you agree that Elder Days may contact you about your care request and may share your request with selected care providers or support partners when appropriate.</span>
+                </label>
+              </div>
+            </div>
+            <div class="provider-form-actions">
+              <button type="submit" class="provider-submit-btn" id="providerSubmitBtn">Send My Provider List →</button>
+              <span class="provider-status" id="providerStatus"></span>
+            </div>
+          </form>
+        </div>
+
+        <!-- Step 3: Provider Results -->
+        <div class="provider-step" id="providerStep3" style="display:none">
+          <div class="results-thank-you">
+            <span class="results-thank-you-icon">✓</span>
+            <div>
+              <div class="results-thank-you-title">Your provider list is ready</div>
+              <div class="results-thank-you-sub">Local options near <strong id="resultsZip"></strong> — we also sent this to your email.</div>
+            </div>
+          </div>
+          <div id="providerCardList" class="provider-card-list"></div>
+          <div class="no-results-msg" id="noResultsMsg" style="display:none">
+            <p>We didn't find provider listings for your exact area yet. Our team will review your request and follow up by email with care resources and next steps.</p>
+          </div>
+          <div class="benefits-next-step" id="benefitsNextStep">
+            <p>Before choosing a provider, check for benefits that may help cover care costs, food, utilities, healthcare, and daily living support.</p>
+            <a href="/intake">Check Benefits That May Help →</a>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -750,7 +1222,7 @@
     Estimates are based on 2025 national averages from Genworth Cost of Care data and may vary significantly by provider, location, and individual needs. This tool is for planning purposes only &mdash; not a guarantee of actual costs.
   </p>
 
-  <p class="powered-by">A free resource from <a href="https://elderdays.com">Elder Days</a> &mdash; helping families navigate senior care with confidence.</p>
+  <p class="powered-by">A free resource from <a href="#">Elder Days</a> &mdash; helping families navigate senior care with confidence.</p>
 
 </div>
 
@@ -763,6 +1235,21 @@ const BASE_COSTS = {
   independent: { base: 2800, label: 'Independent Living' },
   adultday:    { base: 1500, label: 'Adult Day Services' }
 };
+
+let lastCalculatorData = null;
+
+function selectedText(id) {
+  const el = document.getElementById(id);
+  if (!el || typeof el.selectedIndex !== 'number' || el.selectedIndex < 0) return '';
+  return el.options[el.selectedIndex].textContent.trim();
+}
+
+function getSelectedCareNeeds() {
+  return Array.from(document.querySelectorAll('.toggle-item input:checked')).map(inp => {
+    const label = inp.nextElementSibling;
+    return label ? label.textContent.replace(/\s+/g, ' ').trim() : '';
+  }).filter(Boolean);
+}
 
 function calculate() {
   const region     = parseFloat(document.getElementById('region').value);
@@ -790,7 +1277,7 @@ function calculate() {
   needInputs.forEach(inp => {
     const val = Math.round(parseInt(inp.value) * region);
     needsCost += val;
-    const lbl = inp.nextElementSibling.querySelector('span.icon').nextSibling.textContent.trim();
+    const lbl = inp.nextElementSibling.textContent.replace(/\s+/g, ' ').trim();
     needsBreakdown.push({ label: lbl, amount: val });
   });
 
@@ -798,6 +1285,20 @@ function calculate() {
   const insuranceCredit = Math.round(totalMonthly * insurance);
   const outOfPocket = totalMonthly - insuranceCredit;
   const totalProjected = outOfPocket * duration;
+
+  lastCalculatorData = {
+    careType,
+    careTypeLabel: careData.label,
+    careNeeds: getSelectedCareNeeds(),
+    regionLabel: selectedText('region'),
+    parentAgeLabel: selectedText('parentAge'),
+    careHoursPerDay: hours,
+    insuranceLabel: selectedText('insurance'),
+    durationMonths: duration,
+    estimatedMonthlyCost: totalMonthly,
+    estimatedOutOfPocket: outOfPocket,
+    estimatedProjected: totalProjected
+  };
 
   // Render cost cards
   const grid = document.getElementById('costGrid');
